@@ -1,21 +1,29 @@
-# Minimum required version of CMake
 cmake_minimum_required(VERSION 3.10)
 
-# Project name and language
 project(BoidSimulation LANGUAGES CXX)
 
-# Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Add the executable
-add_executable(boid_simulation main.cpp)
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    URL https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-# Manually specify ncurses location if installed via Homebrew
+enable_testing()
+
+add_executable(tests test_main.cpp)
+target_link_libraries(tests gtest_main)
+include(GoogleTest)
+gtest_discover_tests(tests)
+
+add_executable(boid_simulation main.cpp)
 set(CURSES_INCLUDE_PATH /opt/homebrew/opt/ncurses/include)
 set(CURSES_LIBRARY /opt/homebrew/opt/ncurses/lib/libncurses.dylib)
-
-# Link the ncurses library
-# find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_PATH})
 target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY})

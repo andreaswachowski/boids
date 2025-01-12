@@ -27,6 +27,8 @@ cmake --build .
 ./boid_simulation
 ```
 
+To test, run `./tests` or `ctest`.
+
 
 # References
 
