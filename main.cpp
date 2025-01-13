@@ -2,26 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include "boid.h"
 
-struct Boid {
-  float x, y;
-  float vx, vy;
-};
-
-void update_boids(std::vector<Boid>& boids, int max_x, int max_y) {
+void update_boids(std::vector<Boid>& boids) {
   for (auto& boid : boids) {
-    boid.x += boid.vx;
-    boid.y += boid.vy;
-
-    // Wrap around screen edges
-    if (boid.x < 0)
-      boid.x += max_x;
-    if (boid.x >= max_x)
-      boid.x -= max_x;
-    if (boid.y < 0)
-      boid.y += max_y;
-    if (boid.y >= max_y)
-      boid.y -= max_y;
+    boid.update();
   }
 }
 
@@ -31,15 +16,15 @@ int main() {
   noecho();
   curs_set(FALSE);
 
+  const int num_boids = 20;
+
   int max_x, max_y;
   getmaxyx(stdscr, max_y, max_x);
 
-  std::vector<Boid> boids(20);
-  for (auto& boid : boids) {
-    boid.x = rand() % max_x;
-    boid.y = rand() % max_y;
-    boid.vx = (rand() % 3 - 1) * 0.5;  // Random velocities
-    boid.vy = (rand() % 3 - 1) * 0.5;
+  std::vector<Boid> boids;
+  boids.reserve(num_boids);
+  for (int i = 0; i < num_boids; ++i) {
+    boids.emplace_back(max_x, max_y);
   }
 
   while (true) {
@@ -50,7 +35,7 @@ int main() {
     }
 
     refresh();
-    update_boids(boids, max_x, max_y);
+    update_boids(boids);
     napms(100);  // Pause for 100ms
   }
 
