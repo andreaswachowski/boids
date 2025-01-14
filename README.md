@@ -1,6 +1,6 @@
 # Boids
 
-I was interested in boids since I read an article on them in the mid 1980s[^1]. Finally, some time to dabble around. This is a pure hobby project, nothing in it will meet any production standards whatsoever (I also haven't worked with C++ for two decades), and progress (if one can speak of it at all) will be erratic.
+I was interested in boids since I read an article on them in the mid 1980s[^1]. Finally, some time to dabble around. This is a pure hobby project, nothing in it will meet any production standards whatsoever. I haven't worked with C++ for two decades. Progress will be erratic at best.
 
 [^1]: IIRC it was in the German magazine "P.M. Peter Moosleitners interessantes
     Magazin", and from the pictures I remember I assume they reported on
@@ -17,8 +17,7 @@ environments. For example,
 
 # Development Setup
 
-The program has been tested on MacOS. The CMakefile depends on ncurses under the
-HOMEBREW_PREFIX of /opt/homebrew.
+The program is being developed on MacOS. The pipeline also compiles on Ubuntu.
 
 ```
 cd build

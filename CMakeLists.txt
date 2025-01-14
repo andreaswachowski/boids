@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+SET(CURSES_USE_NCURSES TRUE)
+find_package(Curses REQUIRED)
+
 include(FetchContent)
 FetchContent_Declare(
     googletest
@@ -25,7 +28,5 @@ include(GoogleTest)
 gtest_discover_tests(tests)
 
 add_executable(boid_simulation main.cpp)
-set(CURSES_INCLUDE_PATH /opt/homebrew/opt/ncurses/include)
-set(CURSES_LIBRARY /opt/homebrew/opt/ncurses/lib/libncurses.dylib)
 include_directories(${CURSES_INCLUDE_PATH})
 target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY})
