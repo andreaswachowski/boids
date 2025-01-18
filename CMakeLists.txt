@@ -22,11 +22,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(tests test_main.cpp)
+add_executable(tests test_main.cpp boid.cpp)
 target_link_libraries(tests gtest_main)
 include(GoogleTest)
 gtest_discover_tests(tests)
 
-add_executable(boid_simulation main.cpp)
+add_executable(boid_simulation main.cpp boid.cpp)
 include_directories(${CURSES_INCLUDE_PATH})
 target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY})
