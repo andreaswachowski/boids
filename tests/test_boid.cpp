@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "boid.h"
+#include "../src/boid.h"
 
 TEST(Boid, Constructor) {
   Boid b(100, 200);

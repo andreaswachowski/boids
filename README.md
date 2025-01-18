@@ -20,13 +20,16 @@ environments. For example,
 The program is being developed on MacOS. The pipeline also compiles on Ubuntu.
 
 ```
-cd build
-cmake ..
+mkdir Debug
+cd Debug
+cmake -D CMAKE_BUILD_TYPE=Debug ..
 cmake --build .
 ./boid_simulation
 ```
 
-To test, run `./tests` or `ctest`.
+Alternatively, use `Release` instead of `Debug`.
+
+To test, execute `./Debug/tests/tests` or call `ctest` inside the `Debug` directory.
 
 ## cmake-format
 

@@ -21,6 +21,6 @@ pwd
 
 echo
 echo -n "Running cmake-format "
-find . -type f \( -name "CMakeLists.txt" -o -name "*\.cmake" \) ! -path "./build/*" |
+find . -type f \( -name "CMakeLists.txt" -o -name "*\.cmake" \) ! -path "./Debug/*" ! -path "./Release/*" |
   xargs -I {} $SH -c "cmake-format -i {}; echo -n '.'"
 echo
