@@ -2,9 +2,14 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include <thread>
 #include <vector>
+
 #include "boid.h"
+#include "spdlog/cfg/env.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/spdlog.h"
 
 void update_boid_chunk(std::vector<Boid>& boids, size_t start, size_t end) {
   for (size_t i = start; i < end; ++i) {
@@ -23,6 +28,8 @@ void update_boids(std::vector<Boid>& boids, int num_threads) {
     size_t end = std::min(start + chunk_size, total);
 
     if (start < total) {  // Avoid launching empty threads
+      spdlog::debug("Thread {}: Boids {} to {}", i, i * chunk_size,
+                    (i * chunk_size) + chunk_size);
       threads.emplace_back(update_boid_chunk, std::ref(boids), start, end);
     }
   }
@@ -32,11 +39,22 @@ void update_boids(std::vector<Boid>& boids, int num_threads) {
   }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   srand(time(0));
   initscr();
   noecho();
   curs_set(FALSE);
+
+  spdlog::cfg::load_env_levels();
+
+  try {
+    auto logger =
+        spdlog::basic_logger_mt("basic_logger", "logs/development.txt");
+    spdlog::set_default_logger(logger);
+  } catch (const spdlog::spdlog_ex& ex) {
+    std::cout << "Log init failed: " << ex.what() << std::endl;
+    exit(1);
+  }
 
   const int num_threads = std::thread::hardware_concurrency();
 

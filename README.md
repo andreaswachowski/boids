@@ -28,6 +28,13 @@ cmake --build .
 
 To test, run `./tests` or `ctest`.
 
+## Logging
+
+Logs go to `logs/development.txt`. To specify the log level:
+
+```
+./boid_simulation SPDLOG_LEVEL=debug
+```
 
 # References
 

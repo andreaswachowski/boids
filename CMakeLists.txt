@@ -20,13 +20,20 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.15.0
+)
+FetchContent_MakeAvailable(spdlog)
+
 enable_testing()
 
 add_executable(tests test_main.cpp boid.cpp)
-target_link_libraries(tests gtest_main)
+target_link_libraries(tests PRIVATE gtest_main spdlog::spdlog)
 include(GoogleTest)
 gtest_discover_tests(tests)
 
 add_executable(boid_simulation main.cpp boid.cpp)
 include_directories(${CURSES_INCLUDE_PATH})
-target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY})
+target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY} spdlog::spdlog)

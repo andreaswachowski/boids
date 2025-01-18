@@ -1,2 +1,4 @@
 /build
+/.mise.local.toml
 /.cache
+/logs
