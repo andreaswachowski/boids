@@ -28,6 +28,14 @@ cmake --build .
 
 To test, run `./tests` or `ctest`.
 
+## cmake-format
+
+```
+python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install cmakelang
+```
+
 ## Logging
 
 Logs go to `logs/development.txt`. To specify the log level:
