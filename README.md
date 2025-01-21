@@ -5,7 +5,7 @@ I was interested in boids since I read an article on them in the mid 1980s[^1]. 
 [^1]: IIRC it was in the German magazine "P.M. Peter Moosleitners interessantes
     Magazin", and from the pictures I remember I assume they reported on
 [Reynolds, Flocks, herds and schools: A distributed behavioral
-model](https://dl.acm.org/doi/10.1145/37402.37406)
+model](https://dl.acm.org/doi/10.1145/37401.37406)
 
 The goal is to experiment with a 2D simulation of people in crowded
 environments. For example,
@@ -49,4 +49,5 @@ Logs go to `logs/development.txt`. To specify the log level:
 
 # References
 
-* [Reynolds, Flocks, herds and schools: A distributed behavioral model](https://dl.acm.org/doi/11.1145/37402.37406)
+* [Reynolds, "Flocks, herds and schools: A distributed behavioral model"](https://dl.acm.org/doi/10.1145/37401.37406)
+* [Kim, Sujeong et al, "Interactive simulation of dynamic crowd behaviors using general adaptation syndrome theory", 2012](https://dl.acm.org/doi/10.1145/2159616.2159626)
