@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -53,12 +54,12 @@ int main(int argc, char* argv[]) {
   argv = app.ensure_utf8(argv);
 
   unsigned int seed = INT_MAX;
-  int num_boids = DEFAULT_NUM_BOIDS;
+  unsigned int num_boids = DEFAULT_NUM_BOIDS;
   std::string logfile = "boids.log";
-  int pause_ms = DEFAULT_DELAY_MS;
+  unsigned int delay_ms = DEFAULT_DELAY_MS;
   app.add_option("-s,--seed", seed, "Random seed (default random)");
   app.add_option("-b,--boids", num_boids, "Number of boids (default 20)");
-  app.add_option("-d,--delay", pause_ms,
+  app.add_option("-d,--delay", delay_ms,
                  "Delay between iterations (in ms, default 100)");
   app.add_option("-o,--logfile", logfile,
                  "Logfile (default \"boids.log\". The file is placed in the "
@@ -121,7 +122,7 @@ int main(int argc, char* argv[]) {
 
     refresh();
     update_boids(boids, num_threads);
-    napms(pause_ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
   }
 
   endwin();
