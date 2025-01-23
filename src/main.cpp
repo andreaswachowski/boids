@@ -43,6 +43,8 @@ void update_boids(std::vector<Boid>& boids, unsigned int num_threads) {
 }
 }  // namespace
 
+constexpr unsigned int rand_seed = 1;
+
 int main(int /*argc*/, char* /*argv*/[]) {
   initscr();
   noecho();
@@ -69,7 +71,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
   getmaxyx(stdscr, max_y, max_x);
 
   // For now, use predictable random sequence to aid debugging
-  std::mt19937 gen(1);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  std::mt19937 gen(rand_seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
   std::uniform_int_distribution<int> rand_x_gen(1, max_x);
   std::uniform_int_distribution<int> rand_y_gen(1, max_y);
 
