@@ -48,31 +48,37 @@ constexpr unsigned int DEFAULT_NUM_BOIDS = 20;
 constexpr unsigned int DEFAULT_DELAY_MS = 100;
 
 int main(int argc, char* argv[]) {
+  // -- Command line arguments --------------------------------------------
+  CLI::App app{"Boids"};
+  argv = app.ensure_utf8(argv);
+
+  unsigned int seed = INT_MAX;
+  int num_boids = DEFAULT_NUM_BOIDS;
+  std::string logfile = "boids.log";
+  int pause_ms = DEFAULT_DELAY_MS;
+  app.add_option("-s,--seed", seed, "Random seed (default random)");
+  app.add_option("-b,--boids", num_boids, "Number of boids (default 20)");
+  app.add_option("-d,--delay", pause_ms,
+                 "Delay between iterations (in ms, default 100)");
+  app.add_option("-o,--logfile", logfile,
+                 "Logfile (default \"boids.log\". The file is placed in the "
+                 "directory \"logs\". It is not possible to log to stdout.)");
+  app.set_config("-c,--config", "boids.toml", "Read a config file", false);
+
+  CLI11_PARSE(app, argc, argv);
+
+  std::cout << app.config_to_str(true, true);
+
   // -- Logger initialization ---------------------------------------------
   spdlog::cfg::load_env_levels();
 
   try {
-    auto logger =
-        spdlog::basic_logger_mt("basic_logger", "logs/development.txt");
+    auto logger = spdlog::basic_logger_mt("basic_logger", "logs/" + logfile);
     spdlog::set_default_logger(logger);
   } catch (const spdlog::spdlog_ex& ex) {
     std::cout << "Log init failed: " << ex.what() << '\n';
     return 1;
   }
-
-  // -- Command line arguments --------------------------------------------
-  CLI::App app{"Boids"};
-  argv = app.ensure_utf8(argv);
-
-  unsigned int seed = 1;
-  int num_boids = DEFAULT_NUM_BOIDS;
-  int pause_ms = DEFAULT_DELAY_MS;
-  app.add_option("-s,--seed", seed, "Random seed (default 1)");
-  app.add_option("-b,--boids", num_boids, "Number of boids (default 20)");
-  app.add_option("-d,--delay", pause_ms,
-                 "Delay between iterations (in ms, default 100)");
-
-  CLI11_PARSE(app, argc, argv);
 
   // -- ncursses setup ----------------------------------------------------
   initscr();
@@ -86,8 +92,13 @@ int main(int argc, char* argv[]) {
   int max_y = 0;
   getmaxyx(stdscr, max_y, max_x);
 
-  // For now, use predictable random sequence to aid debugging
-  std::mt19937 gen(seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  if (seed == INT_MAX) {
+    std::random_device rand_device;
+    seed = rand_device();
+  }
+  spdlog::info("Using random seed {}.", seed);
+
+  std::mt19937 gen(seed);
   std::uniform_int_distribution<int> rand_x_gen(1, max_x);
   std::uniform_int_distribution<int> rand_y_gen(1, max_y);
 

@@ -1,0 +1,11 @@
+# Random seed (default random)
+# seed=1
+
+# Number of boids (default 20)
+# boids=20
+
+# Delay between iterations (in ms, default 100)
+# delay=100
+
+# Logfile (default "boids.log". The file is placed in the directory "logs". It is not possible to log to stdout.)
+# logfile="boids.log"
