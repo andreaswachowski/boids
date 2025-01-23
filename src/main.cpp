@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <random>
 #include <thread>
 #include <vector>
 
@@ -11,15 +12,17 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
 
+namespace {
 void update_boid_chunk(std::vector<Boid>& boids, size_t start, size_t end) {
   for (size_t i = start; i < end; ++i) {
     boids[i].update();
   }
 }
 
-void update_boids(std::vector<Boid>& boids, int num_threads) {
+void update_boids(std::vector<Boid>& boids, unsigned int num_threads) {
   size_t total = boids.size();
-  size_t chunk_size = std::ceil(static_cast<float>(total) / num_threads);
+  auto chunk_size = static_cast<size_t>(
+      std::ceil(static_cast<float>(total) / static_cast<float>(num_threads)));
 
   std::vector<std::thread> threads;
 
@@ -38,9 +41,9 @@ void update_boids(std::vector<Boid>& boids, int num_threads) {
     thread.join();
   }
 }
+}  // namespace
 
-int main(int argc, char* argv[]) {
-  srand(time(0));
+int main(int /*argc*/, char* /*argv*/[]) {
   initscr();
   noecho();
   curs_set(FALSE);
@@ -52,33 +55,44 @@ int main(int argc, char* argv[]) {
         spdlog::basic_logger_mt("basic_logger", "logs/development.txt");
     spdlog::set_default_logger(logger);
   } catch (const spdlog::spdlog_ex& ex) {
-    std::cout << "Log init failed: " << ex.what() << std::endl;
-    exit(1);
+    std::cout << "Log init failed: " << ex.what() << '\n';
+    return 1;
   }
 
-  const int num_threads = std::thread::hardware_concurrency();
+  const unsigned int num_threads = std::thread::hardware_concurrency();
 
   const int num_boids = 20;
+  const int pause_ms = 100;
 
-  int max_x, max_y;
+  int max_x = 0;
+  int max_y = 0;
   getmaxyx(stdscr, max_y, max_x);
+
+  // For now, use predictable random sequence to aid debugging
+  std::mt19937 gen(1);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  std::uniform_int_distribution<int> rand_x_gen(1, max_x);
+  std::uniform_int_distribution<int> rand_y_gen(1, max_y);
+
+  float x = std::uniform_real_distribution<float>(
+      1.0, static_cast<float>(max_x))(gen);
 
   std::vector<Boid> boids;
   boids.reserve(num_boids);
   for (int i = 0; i < num_boids; ++i) {
-    boids.emplace_back(max_x, max_y);
+    boids.emplace_back(gen, max_x, max_y);
   }
 
   while (true) {
     clear();
 
     for (const auto& boid : boids) {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
       mvprintw(static_cast<int>(boid.y), static_cast<int>(boid.x), "o");
     }
 
     refresh();
     update_boids(boids, num_threads);
-    napms(100);  // Pause for 100ms
+    napms(pause_ms);
   }
 
   endwin();

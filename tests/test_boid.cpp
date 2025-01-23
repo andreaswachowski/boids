@@ -1,21 +1,27 @@
 #include <gtest/gtest.h>
-#include "../src/boid.h"
+#include <random>
+#include "boid.h"
+
+constexpr unsigned int max_x = 100;
+constexpr unsigned int max_y = 200;
 
 TEST(Boid, Constructor) {
-  Boid b(100, 200);
-  EXPECT_EQ(b.max_x, 100);
-  EXPECT_EQ(b.max_y, 200);
+  std::mt19937 gen(1);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  Boid boid(gen, max_x, max_y);
+  EXPECT_EQ(boid.max_x, max_x);
+  EXPECT_EQ(boid.max_y, max_y);
 }
 
 TEST(Boid, Update) {
-  Boid b(100, 200);
-  float x{b.x};
-  float y{b.y};
-  float vx{b.vx};
-  float vy{b.vy};
+  std::mt19937 gen(1);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  Boid boid(gen, max_x, max_y);
+  double x{boid.x};
+  double y{boid.y};
+  double vx{boid.vx};
+  double vy{boid.vy};
 
-  b.update();
+  boid.update();
 
-  EXPECT_EQ(b.x, x + vx);
-  EXPECT_EQ(b.y, y + vy);
+  EXPECT_EQ(boid.x, x + vx);
+  EXPECT_EQ(boid.y, y + vy);
 }
