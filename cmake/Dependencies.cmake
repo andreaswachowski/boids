@@ -14,3 +14,7 @@ FetchContent_MakeAvailable(googletest)
 FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git
                      GIT_TAG v1.15.0)
 FetchContent_MakeAvailable(spdlog)
+
+FetchContent_Declare(cli11 GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+                     GIT_TAG v2.4.2)
+FetchContent_MakeAvailable(cli11)

@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 
+#include <CLI/CLI.hpp>
 #include "boid.h"
 #include "spdlog/cfg/env.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -43,13 +44,11 @@ void update_boids(std::vector<Boid>& boids, unsigned int num_threads) {
 }
 }  // namespace
 
-constexpr unsigned int rand_seed = 1;
+constexpr unsigned int DEFAULT_NUM_BOIDS = 20;
+constexpr unsigned int DEFAULT_DELAY_MS = 100;
 
-int main(int /*argc*/, char* /*argv*/[]) {
-  initscr();
-  noecho();
-  curs_set(FALSE);
-
+int main(int argc, char* argv[]) {
+  // -- Logger initialization ---------------------------------------------
   spdlog::cfg::load_env_levels();
 
   try {
@@ -61,17 +60,34 @@ int main(int /*argc*/, char* /*argv*/[]) {
     return 1;
   }
 
-  const unsigned int num_threads = std::thread::hardware_concurrency();
+  // -- Command line arguments --------------------------------------------
+  CLI::App app{"Boids"};
+  argv = app.ensure_utf8(argv);
 
-  const int num_boids = 20;
-  const int pause_ms = 100;
+  unsigned int seed = 1;
+  int num_boids = DEFAULT_NUM_BOIDS;
+  int pause_ms = DEFAULT_DELAY_MS;
+  app.add_option("-s,--seed", seed, "Random seed (default 1)");
+  app.add_option("-b,--boids", num_boids, "Number of boids (default 20)");
+  app.add_option("-d,--delay", pause_ms,
+                 "Delay between iterations (in ms, default 100)");
+
+  CLI11_PARSE(app, argc, argv);
+
+  // -- ncursses setup ----------------------------------------------------
+  initscr();
+  noecho();
+  curs_set(FALSE);
+
+  // -- simulation setup --------------------------------------------------
+  const unsigned int num_threads = std::thread::hardware_concurrency();
 
   int max_x = 0;
   int max_y = 0;
   getmaxyx(stdscr, max_y, max_x);
 
   // For now, use predictable random sequence to aid debugging
-  std::mt19937 gen(rand_seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  std::mt19937 gen(seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
   std::uniform_int_distribution<int> rand_x_gen(1, max_x);
   std::uniform_int_distribution<int> rand_y_gen(1, max_y);
 
