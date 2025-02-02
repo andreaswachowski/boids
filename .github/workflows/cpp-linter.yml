@@ -60,7 +60,9 @@ jobs:
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # https://github.com/cpp-linter/cpp-linter-action/blob/v2/docs/permissions.md#thread-comments
+          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token
+          GITHUB_TOKEN: ${{ secrets.CPP_LINTER_PAT }}
         with:
           database: ${{ steps.strings.outputs.build-output-dir }}
           style: "file" # Use .clang-format config file
