@@ -29,6 +29,12 @@ cmake --build .
 
 Alternatively, use `Release` instead of `Debug`.
 
+For `clangd` integration with neovim, you also may need to symbolically link the compile commands database to the project root:
+
+```
+ln -s /path/to/boids/Debug/compile_commands.json /path/to/boids
+```
+
 To test, execute `./Debug/tests/tests` or call `ctest` inside the `Debug` directory.
 
 ## cmake-format
