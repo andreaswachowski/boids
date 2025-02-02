@@ -32,8 +32,6 @@ on:
         "meson.build",
         "**.cmake",
       ]
-env:
-  ACTIONS_RUNNER_DEBUG: true
 jobs:
   cpp-linter:
     runs-on: ubuntu-latest
