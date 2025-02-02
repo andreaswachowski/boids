@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  // -- ncursses setup ----------------------------------------------------
+  // -- ncurses setup -----------------------------------------------------
   initscr();
   noecho();
   curs_set(FALSE);
