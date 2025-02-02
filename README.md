@@ -37,12 +37,12 @@ ln -s /path/to/boids/Debug/compile_commands.json /path/to/boids
 
 To test, execute `./Debug/tests/tests` or call `ctest` inside the `Debug` directory.
 
-## cmake-format
+## Linters (clang-format, clang-tidy, cmake-format)
 
 ```
 python3 -m venv venv
 source venv/bin/activate
-python3 -m pip install cmakelang
+python3 -m pip install cmakelang clang-format clang-tidy
 ```
 
 ## Git Hooks
