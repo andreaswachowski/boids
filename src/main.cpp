@@ -1,8 +1,8 @@
 #include <ncurses.h>
 #include <chrono>
-#include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <execution>
 #include <iostream>
 #include <random>
 #include <thread>
@@ -15,33 +15,10 @@
 #include "spdlog/spdlog.h"
 
 namespace {
-void update_boid_chunk(std::vector<Boid>& boids, size_t start, size_t end) {
-  for (size_t i = start; i < end; ++i) {
-    boids[i].update();
-  }
-}
-
-void update_boids(std::vector<Boid>& boids, unsigned int num_threads) {
+void update_boids(std::vector<Boid>& boids) {
   size_t total = boids.size();
-  auto chunk_size = static_cast<size_t>(
-      std::ceil(static_cast<float>(total) / static_cast<float>(num_threads)));
-
-  std::vector<std::thread> threads;
-
-  for (int i = 0; i < num_threads; ++i) {
-    size_t start = i * chunk_size;
-    size_t end = std::min(start + chunk_size, total);
-
-    if (start < total) {  // Avoid launching empty threads
-      spdlog::debug("Thread {}: Boids {} to {}", i, i * chunk_size,
-                    (i * chunk_size) + chunk_size);
-      threads.emplace_back(update_boid_chunk, std::ref(boids), start, end);
-    }
-  }
-
-  for (auto& thread : threads) {
-    thread.join();
-  }
+  std::for_each(std::execution::par, boids.begin(), boids.end(),
+                [](Boid& boid) { boid.update(); });
 }
 }  // namespace
 
@@ -87,8 +64,6 @@ int main(int argc, char* argv[]) {
   curs_set(FALSE);
 
   // -- simulation setup --------------------------------------------------
-  const unsigned int num_threads = std::thread::hardware_concurrency();
-
   int max_x = 0;
   int max_y = 0;
   getmaxyx(stdscr, max_y, max_x);
@@ -121,7 +96,7 @@ int main(int argc, char* argv[]) {
     }
 
     refresh();
-    update_boids(boids, num_threads);
+    update_boids(boids);
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
   }
 
