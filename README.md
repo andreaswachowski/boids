@@ -45,6 +45,19 @@ source venv/bin/activate
 python3 -m pip install cmakelang
 ```
 
+## Git Hooks
+
+I've enabled the following pre-push hook:
+
+```
+#!/bin/sh
+./scripts/format.sh
+./scripts/tidy.sh
+```
+
+In particular, clangd is not reporting everything clang-tidy reports on the
+command line. I haven't figured out yet why that happens.
+
 ## Logging
 
 Logs go to `logs/development.txt`. To specify the log level:

@@ -12,15 +12,16 @@ else
 fi
 
 pwd
-# find_sources="find include src tests example bench -not ( -path include/spdlog/fmt/bundled -prune ) -type f -name *\.h -o -name *\.cpp"
-# echo -n "Running dos2unix     "
-# $find_sources | xargs -I {} sh -c "dos2unix '{}' 2>/dev/null; echo -n '.'"
-# echo
-# echo -n "Running clang-format "
-# $find_sources | xargs -I {} sh -c "clang-format -i {}; echo -n '.'"
+
+find_sources="find src tests -type f -name *\.h -o -name *\.cpp"
+echo -n "Running dos2unix     "
+$find_sources | xargs -I {} $SH -c "dos2unix '{}' 2>/dev/null; echo -n '.'"
+echo
+echo -n "Running clang-format "
+$find_sources | xargs -I {} $SH -c "clang-format -i {}; echo -n '.'"
 
 echo
 echo -n "Running cmake-format "
-find . -type f \( -name "CMakeLists.txt" -o -name "*\.cmake" \) ! -path "./Debug/*" ! -path "./Release/*" |
+find . -type f \( -name "CMakeLists.txt" -o -name "*\.cmake" \) ! -path "./Debug/*" ! -path "./Release/*" ! -path "./venv/*" |
   xargs -I {} $SH -c "cmake-format -i {}; echo -n '.'"
 echo
