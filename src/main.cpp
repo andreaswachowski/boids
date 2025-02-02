@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     auto logger = spdlog::basic_logger_mt("basic_logger", "logs/" + logfile);
     spdlog::set_default_logger(logger);
   } catch (const spdlog::spdlog_ex& ex) {
-    std::cout << "Log init failed: " << ex.what() << '\n';
+    std::cerr << "Log init failed: " << ex.what() << '\n';
     return 1;
   }
 
