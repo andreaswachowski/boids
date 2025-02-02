@@ -1,5 +1,7 @@
 #include <ncurses.h>
+#include <algorithm>
 #include <chrono>
+#include <climits>
 #include <cstdlib>
 #include <ctime>
 #include <execution>
@@ -11,14 +13,13 @@
 #include <CLI/CLI.hpp>
 #include "boid.h"
 #include "spdlog/cfg/env.h"
+#include "spdlog/common.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
 
 namespace {
 void update_boids(std::vector<Boid>& boids) {
-  size_t total = boids.size();
-  std::for_each(std::execution::par, boids.begin(), boids.end(),
-                [](Boid& boid) { boid.update(); });
+  std::for_each(std::execution::par, boids.begin(), boids.end(), [](Boid& boid) { boid.update(); });
 }
 }  // namespace
 
@@ -36,8 +37,7 @@ int main(int argc, char* argv[]) {
   unsigned int delay_ms = DEFAULT_DELAY_MS;
   app.add_option("-s,--seed", seed, "Random seed (default random)");
   app.add_option("-b,--boids", num_boids, "Number of boids (default 20)");
-  app.add_option("-d,--delay", delay_ms,
-                 "Delay between iterations (in ms, default 100)");
+  app.add_option("-d,--delay", delay_ms, "Delay between iterations (in ms, default 100)");
   app.add_option("-o,--logfile", logfile,
                  "Logfile (default \"boids.log\". The file is placed in the "
                  "directory \"logs\". It is not possible to log to stdout.)");
@@ -75,11 +75,6 @@ int main(int argc, char* argv[]) {
   spdlog::info("Using random seed {}.", seed);
 
   std::mt19937 gen(seed);
-  std::uniform_int_distribution<int> rand_x_gen(1, max_x);
-  std::uniform_int_distribution<int> rand_y_gen(1, max_y);
-
-  float x = std::uniform_real_distribution<float>(
-      1.0, static_cast<float>(max_x))(gen);
 
   std::vector<Boid> boids;
   boids.reserve(num_boids);
