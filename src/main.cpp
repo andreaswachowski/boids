@@ -6,6 +6,7 @@
 #include <ctime>
 #include <execution>
 #include <iostream>
+#include <memory>
 #include <random>
 #include <thread>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "boid.h"
 #include "spdlog/cfg/env.h"
 #include "spdlog/common.h"
+#include "spdlog/logger.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
 
@@ -50,8 +52,10 @@ int main(int argc, char* argv[]) {
   // -- Logger initialization ---------------------------------------------
   spdlog::cfg::load_env_levels();
 
+  std::shared_ptr<spdlog::logger> logger;
+
   try {
-    auto logger = spdlog::basic_logger_mt("basic_logger", "logs/" + logfile);
+    logger = spdlog::basic_logger_mt("basic_logger", "logs/" + logfile);
     spdlog::set_default_logger(logger);
   } catch (const spdlog::spdlog_ex& ex) {
     std::cerr << "Log init failed: " << ex.what() << '\n';
@@ -73,6 +77,7 @@ int main(int argc, char* argv[]) {
     seed = rand_device();
   }
   spdlog::info("Using random seed {}.", seed);
+  logger->flush();  // ensure that the seed is logged.
 
   std::mt19937 gen(seed);
 
