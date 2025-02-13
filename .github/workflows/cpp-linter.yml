@@ -2,36 +2,10 @@ name: cpp-linter
 on:
   pull_request:
     branches: ["main"]
-    paths:
-      [
-        "**.c",
-        "**.cpp",
-        "**.h",
-        "**.hpp",
-        "**.cxx",
-        "**.hxx",
-        "**.cc",
-        "**.hh",
-        "**CMakeLists.txt",
-        "meson.build",
-        "**.cmake",
-      ]
+    paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
   push:
     branches: ["main"]
-    paths:
-      [
-        "**.c",
-        "**.cpp",
-        "**.h",
-        "**.hpp",
-        "**.cxx",
-        "**.hxx",
-        "**.cc",
-        "**.hh",
-        "**CMakeLists.txt",
-        "meson.build",
-        "**.cmake",
-      ]
+    paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
 jobs:
   cpp-linter:
     runs-on: ubuntu-latest
