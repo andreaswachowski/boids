@@ -6,6 +6,11 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 15.2)
 # Export compile commands for tools like clang-tidy
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Allow interprocedural optimization
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ipo_supported})
+
 # Parallel algorithms support for Clang 17+ and operating systems with libc++
 # Primary source:
 # https://libcxx.llvm.org/UserDocumentation.html#enabling-experimental-c-library-features
