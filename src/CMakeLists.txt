@@ -1,3 +1,2 @@
-add_library(boids OBJECT boid.cpp)
-
-target_include_directories(boids PUBLIC .)
+add_subdirectory(common)
+add_subdirectory(cli)

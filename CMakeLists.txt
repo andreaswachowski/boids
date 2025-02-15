@@ -13,9 +13,7 @@ add_executable(boid_simulation main.cpp)
 
 add_subdirectory(src bin)
 
-target_include_directories(boid_simulation PRIVATE ${CURSES_INCLUDE_PATH})
-target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY} boids
-                                              spdlog::spdlog CLI11::CLI11)
+target_link_libraries(boid_simulation PRIVATE cli common)
 
 option(ENABLE_TESTING "Enable testing" ON)
 if(ENABLE_TESTING)
