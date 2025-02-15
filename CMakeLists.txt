@@ -11,7 +11,7 @@ include(cmake/Dependencies.cmake)
 
 add_executable(boid_simulation main.cpp)
 
-add_subdirectory(src)
+add_subdirectory(src bin)
 
 target_include_directories(boid_simulation PRIVATE ${CURSES_INCLUDE_PATH})
 target_link_libraries(boid_simulation PRIVATE ${CURSES_LIBRARY} boids
