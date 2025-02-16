@@ -1,3 +1,5 @@
+#include "run.h"
+
 #include <ncurses.h>
 #include <algorithm>
 #include <chrono>
@@ -29,7 +31,7 @@ constexpr unsigned int DEFAULT_NUM_BOIDS = 20;
 constexpr unsigned int DEFAULT_DELAY_MS = 100;
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-extern int run(int argc, char* argv[]) {
+int run(int argc, char* argv[]) {
   // -- Command line arguments --------------------------------------------
   CLI::App app{"Boids"};
   argv = app.ensure_utf8(argv);
