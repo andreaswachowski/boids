@@ -2,27 +2,33 @@
 #include <random>
 #include "boid.h"
 
-constexpr unsigned int rand_seed = 1;
-constexpr unsigned int max_x = 100;
-constexpr unsigned int max_y = 200;
+class BoidTest : public testing::Test {
+  protected:
+  BoidTest()
+      : gen_(dev()),
+        boid_(gen_, max_x, max_y) {};
 
-TEST(Boid, Constructor) {
-  std::mt19937 gen(rand_seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
-  const Boid boid(gen, max_x, max_y);
-  EXPECT_EQ(boid.max_x, max_x);
-  EXPECT_EQ(boid.max_y, max_y);
+  constexpr static unsigned int max_x = 100;
+  constexpr static unsigned int max_y = 200;
+
+  std::random_device dev;
+  std::mt19937 gen_;
+  Boid boid_;
+};
+
+TEST_F(BoidTest, InitializesCorrectly) {
+  EXPECT_EQ(boid_.max_x, max_x);
+  EXPECT_EQ(boid_.max_y, max_y);
 }
 
-TEST(Boid, Update) {
-  std::mt19937 gen(rand_seed);  // NOLINT(cert-msc32-c,cert-msc51-cpp)
-  Boid boid(gen, max_x, max_y);
-  const double x{boid.x};
-  const double y{boid.y};
-  const double vx{boid.vx};
-  const double vy{boid.vy};
+TEST_F(BoidTest, UpdatesCorrectly) {
+  const double x{boid_.x};
+  const double y{boid_.y};
+  const double vx{boid_.vx};
+  const double vy{boid_.vy};
 
-  boid.update();
+  boid_.update();
 
-  EXPECT_EQ(boid.x, x + vx);
-  EXPECT_EQ(boid.y, y + vy);
+  EXPECT_EQ(boid_.x, x + vx);
+  EXPECT_EQ(boid_.y, y + vy);
 }
