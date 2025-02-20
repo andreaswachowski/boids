@@ -36,15 +36,9 @@ jobs:
           - os: macos-15
             c_compiler: clang
             cpp_compiler: clang++
-            build_type: Release
-          - os: macos-15
-            c_compiler: clang
-            cpp_compiler: clang++
-            build_type: Debug
         exclude:
           - os: macos-15
             c_compiler: gcc
-          - build_type: Debug
 
     steps:
       - uses: actions/checkout@v4
