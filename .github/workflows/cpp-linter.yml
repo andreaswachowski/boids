@@ -7,7 +7,11 @@ on:
     branches: ["main"]
     paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
 jobs:
+  prepare-dependencies:
+    uses: ./.github/workflows/prepare-dependencies.yml
+
   cpp-linter:
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

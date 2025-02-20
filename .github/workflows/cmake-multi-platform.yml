@@ -9,7 +9,11 @@ on:
     branches: ["main"]
 
 jobs:
+  prepare-dependencies:
+    uses: ./.github/workflows/prepare-dependencies.yml
+
   build:
+    needs: prepare-dependencies
     runs-on: ${{ matrix.os }}
 
     strategy:
