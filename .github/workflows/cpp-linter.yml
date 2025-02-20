@@ -7,11 +7,7 @@ on:
     branches: ["main"]
     paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
 jobs:
-  prepare-dependencies:
-    uses: ./.github/workflows/prepare-dependencies.yml
-
   cpp-linter:
-    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +18,16 @@ jobs:
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y libspdlog-dev libgtest-dev libcli11-dev lcov
+          elif [[ "${{ matrix.os }}" == "macos-15" ]]; then
+            brew update
+            brew install spdlog googletest cli11 lcov
+          fi
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
