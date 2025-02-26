@@ -60,6 +60,19 @@ jobs:
             brew install spdlog googletest cli11 lcov
           fi
 
+      - name: Add LLVM to PATH
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            ls -ld /usr/lib/llvm*
+            ls -ld /usr/lib/gcc/x86_64-linux-gnu/
+            echo "/usr/lib/llvm-18/bin" >> $GITHUB_PATH
+          elif [[ "${{ matrix.os }}" == "macos-15" ]]; then
+            echo "$(brew --prefix llvm@18)/bin" >> $GITHUB_PATH
+          fi
+
+      - name: Verify llvm-cov location
+        run: which llvm-cov && llvm-cov --version
+
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
