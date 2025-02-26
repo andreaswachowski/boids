@@ -11,8 +11,6 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ipo_supported})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-
 # Parallel algorithms support for Clang 17+ and operating systems with libc++
 # Primary source:
 # https://libcxx.llvm.org/UserDocumentation.html#enabling-experimental-c-library-features
