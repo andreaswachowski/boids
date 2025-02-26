@@ -11,6 +11,10 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ipo_supported})
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  add_compile_options(-fprofile-arcs -ftest-coverage)
+endif()
+
 # Parallel algorithms support for Clang 17+ and operating systems with libc++
 # Primary source:
 # https://libcxx.llvm.org/UserDocumentation.html#enabling-experimental-c-library-features
