@@ -14,10 +14,10 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} -d . --zerocounters
     COMMAND $<TARGET_FILE:${target}>
     COMMAND
-      ${LCOV_PATH} -d . --ignore-errors unsupported,unused --exclude
+      ${LCOV_PATH} -d . --ignore-errors unsupported --exclude
       ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
       ${CMAKE_SOURCE_DIR}/cmake/gcov-llvm-wrapper.sh --capture -o coverage.info
-    COMMAND ${LCOV_PATH} -d . -r coverage.info '/usr/include/*' -o filtered.info
+    COMMAND ${LCOV_PATH} -d . -r coverage.info -o filtered.info
     COMMAND ${GENHTML_PATH} -o coverage filtered.info
     COMMAND rm -rf coverage.info filtered.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
