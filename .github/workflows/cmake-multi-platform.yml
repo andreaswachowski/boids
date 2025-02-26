@@ -92,13 +92,12 @@ jobs:
             cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
           fi
           ls -l .
-          ls -l "${{ matrix.build_type }}"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.os }}-${{ matrix.c_compiler }}
-          path: "coverage"
+          path: "${{ steps.strings.outputs.build-output-dir }}/coverage"
           retention-days: 1 # Keep artifacts for 1 day
           if-no-files-found: ignore
 

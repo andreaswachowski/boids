@@ -14,13 +14,13 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} -d . --zerocounters
     COMMAND $<TARGET_FILE:${target}>
     COMMAND find . -name "*.gcda" -o -name "*.gcno"
+    COMMAND echo BLARK
+    COMMAND pwd
     COMMAND
-      ${LCOV_PATH} -d . --ignore-errors unsupported,unused --exclude
+      ${LCOV_PATH} -d . --ignore-errors unsupported,unused,gcov --exclude
       ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
       ${CMAKE_SOURCE_DIR}/cmake/gcov-llvm-wrapper.sh --capture -o coverage.info
     COMMAND ${LCOV_PATH} -d . -r coverage.info -o filtered.info
-    COMMAND echo BLARK
-    COMMAND echo $(pwd)
     COMMAND ${GENHTML_PATH} --ignore-errors category,category -o coverage
             filtered.info
     COMMAND rm -rf coverage.info filtered.info
