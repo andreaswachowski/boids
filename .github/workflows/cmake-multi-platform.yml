@@ -63,8 +63,6 @@ jobs:
       - name: Add LLVM to PATH
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            ls -ld /usr/lib/llvm*
-            ls -ld /usr/lib/gcc/x86_64-linux-gnu/
             echo "/usr/lib/llvm-18/bin" >> $GITHUB_PATH
           elif [[ "${{ matrix.os }}" == "macos-15" ]]; then
             echo "$(brew --prefix llvm@18)/bin" >> $GITHUB_PATH
@@ -98,7 +96,7 @@ jobs:
         with:
           name: coverage-${{ matrix.os }}-${{ matrix.c_compiler }}
           path: "${{ steps.strings.outputs.build-output-dir }}/coverage"
-          retention-days: 1 # Keep artifacts for 1 day
+          retention-days: 7 # Keep artifacts for 7 days
           if-no-files-found: ignore
 
       - name: Test
