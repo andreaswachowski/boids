@@ -13,14 +13,17 @@ RUN apt-get update && apt-get install -y \
     sudo \
     git \
     cmake \
+    man-db \
     ninja-build \
     build-essential \
     python3-minimal python3-pip \
+    vim \
     wget \
     libzstd-dev \
     software-properties-common \
     libspdlog-dev libgtest-dev libcli11-dev lcov \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && yes | /usr/bin/unminimize
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
 RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
@@ -38,4 +41,5 @@ COPY tests tests/
 ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
 RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> ~/.bashrc
 RUN mkdir Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
+RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build .
 # RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build . -t coverage
