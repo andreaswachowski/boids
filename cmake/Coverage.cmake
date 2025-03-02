@@ -1,5 +1,4 @@
 function(AddCoverage target)
-  find_program(GCOV_PATH gcov REQUIRED)
   find_program(LCOV_PATH lcov REQUIRED)
   find_program(GENHTML_PATH genhtml REQUIRED)
 
@@ -7,6 +6,15 @@ function(AddCoverage target)
                       INTERFACE_INCLUDE_DIRECTORIES)
   if(NOT GTEST_INCLUDE_DIR)
     message(FATAL_ERROR "Failed to get GoogleTest include directory")
+  endif()
+
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    find_program(GCOV_PATH gcov REQUIRED)
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(GCOV_PATH ${CMAKE_SOURCE_DIR}/cmake/gcov-llvm-wrapper.sh)
+  else()
+    message(
+      FATAL_ERROR "Unsupported compiler for coverage: ${CMAKE_CXX_COMPILER_ID}")
   endif()
 
   if(APPLE)
