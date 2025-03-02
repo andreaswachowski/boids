@@ -1,4 +1,5 @@
 function(AddCoverage target)
+  find_program(GCOV_PATH gcov REQUIRED)
   find_program(LCOV_PATH lcov REQUIRED)
   find_program(GENHTML_PATH genhtml REQUIRED)
 
@@ -8,6 +9,17 @@ function(AddCoverage target)
     message(FATAL_ERROR "Failed to get GoogleTest include directory")
   endif()
 
+  if(APPLE)
+    execute_process(
+      COMMAND xcrun --sdk macosx --show-sdk-path
+      OUTPUT_VARIABLE SYSTEM_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(SYSTEM_INCLUDE_PATH "${SYSTEM_INCLUDE_PATH}/usr/include")
+  elseif(UNIX AND NOT APPLE)
+    set(SYSTEM_INCLUDE_PATH "/usr/include")
+  else()
+    message(FATAL_ERROR "Unsupported platform for coverage collection")
+  endif()
+
   add_custom_target(
     coverage
     COMMENT "Running coverage for ${target}..."
@@ -15,18 +27,12 @@ function(AddCoverage target)
     COMMAND $<TARGET_FILE:${target}>
     COMMAND
       ${LCOV_PATH} -d . --ignore-errors unsupported,unused,gcov --exclude
-      ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
-      ${CMAKE_SOURCE_DIR}/cmake/gcov-llvm-wrapper.sh --capture -o coverage.info
-    COMMAND find . -name '*.gcda' -o -name '*.gcno' -name '*.gcov'
-    # COMMAND
-    # ls -l ./tests/common/common_tests.ltrans0.ltrans.gcno
-    # ./tests/common/CMakeFiles/common_tests.dir/test_boid.cpp.gcno
-    # ./tests/common/CMakeFiles/common_tests.dir/test_boid.cpp.gcda
-    # ./tests/common/common_tests.wpa.gcno
-    # ./bin/common/CMakeFiles/common.dir/boid.cpp.gcno
-    # ./bin/common/CMakeFiles/common.dir/boid.cpp.gcda
-    COMMAND ${GENHTML_PATH} --version
-    COMMAND ${LCOV_PATH} --version
+      ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
+      ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} --capture -o
+      coverage.info
+    # COMMAND find . -name '*.gcda' -o -name '*.gcno' -name '*.gcov'
+    # COMMAND ${GENHTML_PATH} --version
+    # COMMAND ${LCOV_PATH} --version
     COMMAND ${LCOV_PATH} -d . -r coverage.info -o filtered.info
     COMMAND ${GENHTML_PATH} --ignore-errors category,category -o coverage
             filtered.info
