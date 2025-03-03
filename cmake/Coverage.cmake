@@ -34,7 +34,7 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} -d . --zerocounters
     COMMAND $<TARGET_FILE:${target}>
     COMMAND
-      ${LCOV_PATH} -d . --ignore-errors unsupported,unused --exclude
+      ${LCOV_PATH} -d . --ignore-errors unsupported --exclude
       ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
       ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} --capture -o
       coverage.info
