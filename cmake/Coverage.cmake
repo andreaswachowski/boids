@@ -18,10 +18,24 @@ function(AddCoverage target)
   endif()
 
   if(APPLE)
+    # Get the currently used compiler
     execute_process(
-      COMMAND xcrun --sdk macosx --show-sdk-path
-      OUTPUT_VARIABLE SYSTEM_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(SYSTEM_INCLUDE_PATH "${SYSTEM_INCLUDE_PATH}/usr/include")
+      COMMAND ${CMAKE_CXX_COMPILER} --version OUTPUT_VARIABLE COMPILER_VERSION
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(CMAKE_CXX_COMPILER MATCHES "/opt/homebrew/opt/llvm@")
+      # If using Homebrew LLVM, set its include path
+      string(REGEX MATCH "^[0-9]+" COMPILER_MAJOR_VERSION
+                   "${CMAKE_CXX_COMPILER_VERSION}")
+      set(SYSTEM_INCLUDE_PATH
+          "/opt/homebrew/opt/llvm@${COMPILER_MAJOR_VERSION}/include")
+    else()
+      # Default to Xcode's SDK include path
+      execute_process(
+        COMMAND xcrun --sdk macosx --show-sdk-path
+        OUTPUT_VARIABLE SYSTEM_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+      set(SYSTEM_INCLUDE_PATH "${SYSTEM_INCLUDE_PATH}/usr/include")
+    endif()
   elseif(UNIX AND NOT APPLE)
     set(SYSTEM_INCLUDE_PATH "/usr/include")
   else()
