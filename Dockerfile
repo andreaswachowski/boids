@@ -1,6 +1,11 @@
 FROM ubuntu:24.04
 # vi: tw=0
 
+# This Dockerfile is helpful to test out Ubuntu-specific issues
+# when developing on a different OS (in particular, MacOS).
+#
+# It doesn't serve any other purpose at the moment.
+
 # From
 # https://github.com/banach-space/llvm-tutor/blob/main/Dockerfile_ubuntu_apt:
 # As `tzdata` gets installed automatically (AFAIK, Python depends on it), it
