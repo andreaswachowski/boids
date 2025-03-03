@@ -50,9 +50,13 @@ function(AddCoverage target)
     # "unused" is required for /usr/include (i.e. what else, if anything,
     # should I use in the assignment of SYSTEM_INCLUDE_PATH above?)
     # and for Macos, but only in the CI-pipeline (I need the exclude locally)
+    # "filter brace" to avoid closing braces to count on coverage. This happened
+    # with clang and not GNU, thus having incomparable results.
+    # https://github.com/linux-test-project/lcov/issues/129
+    # https://github.com/linux-test-project/lcov/issues/160#issuecomment-1543738264
     COMMAND
-      ${LCOV_PATH} -d . --ignore-errors unsupported,unused --exclude
-      ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
+      ${LCOV_PATH} -d . --filter brace --ignore-errors unsupported,unused
+      --exclude ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
       ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} --capture -o
       coverage.info
     # COMMAND find . -name '*.gcda' -o -name '*.gcno' -name '*.gcov'
