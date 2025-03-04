@@ -9,6 +9,8 @@ endif()
 include(cmake/Config.cmake)
 include(cmake/Dependencies.cmake)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 add_subdirectory(src bin)
 
 option(ENABLE_TESTING "Enable testing" ON)
