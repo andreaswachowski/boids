@@ -55,6 +55,8 @@ function(AddCoverage target)
       --filter
       brace)
   set(COV_NAME coverage)
+  set(LCOV_EXCLUDES --exclude ${SYSTEM_INCLUDE_PATH} --exclude
+                    ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests)
 
   add_custom_target(
     coverage
@@ -63,10 +65,8 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . --zerocounters
     # Create baseline to make sure untouched files show up in the report
     COMMAND
-      ${LCOV_PATH} ${LCOV_ARGS} -d . --exclude ${SYSTEM_INCLUDE_PATH}
-      --erase-functions __cxx_global_var_init --exclude
-      ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} -c -i -o
-      ${COV_NAME}.base
+      ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . --erase-functions
+      __cxx_global_var_init --gcov-tool ${GCOV_PATH} -c -i -o ${COV_NAME}.base
     # Run tests
     COMMAND $<TARGET_FILE:${target}>
     # Capturing lcov counters and generating report
@@ -74,17 +74,15 @@ function(AddCoverage target)
     # happened with clang and not GNU, thus having incomparable results.
     # https://github.com/linux-test-project/lcov/issues/129
     # https://github.com/linux-test-project/lcov/issues/160#issuecomment-1543738264
-    COMMAND
-      ${LCOV_PATH} ${LCOV_ARGS} -d . --exclude ${SYSTEM_INCLUDE_PATH} --exclude
-      ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
-      ${GCOV_PATH} --capture -o ${COV_NAME}.capture
+    COMMAND ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . --gcov-tool
+            ${GCOV_PATH} --capture -o ${COV_NAME}.capture
     # Add baseline counters
     COMMAND
-      ${LCOV_PATH} ${LCOV_ARGS} --gcov-tool ${GCOV_PATH} -a ${COV_NAME}.base -a
-      ${COV_NAME}.capture --output-file ${COV_NAME}.total
+      ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} --gcov-tool ${GCOV_PATH} -a
+      ${COV_NAME}.base -a ${COV_NAME}.capture --output-file ${COV_NAME}.total
     # filter collected data to final coverage report
-    COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . -r ${COV_NAME}.total -o
-            ${COV_NAME}.info
+    COMMAND ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . -r ${COV_NAME}.total
+            -o ${COV_NAME}.info
     # Generate HTML output
     COMMAND ${GENHTML_PATH} --rc derive_function_end_line=0 --ignore-errors
             category,category -o coverage ${COV_NAME}.info
