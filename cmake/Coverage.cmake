@@ -55,8 +55,17 @@ function(AddCoverage target)
       --filter
       brace)
   set(COV_NAME coverage)
-  set(LCOV_EXCLUDES --exclude ${SYSTEM_INCLUDE_PATH} --exclude
-                    ${GTEST_INCLUDE_DIR} --exclude ${CMAKE_SOURCE_DIR}/tests)
+  set(LCOV_EXCLUDES
+      --exclude
+      include
+      --exclude
+      CLI
+      --exclude
+      ${SYSTEM_INCLUDE_PATH}
+      --exclude
+      ${GTEST_INCLUDE_DIR}
+      --exclude
+      ${CMAKE_SOURCE_DIR}/tests)
 
   add_custom_target(
     coverage
