@@ -45,7 +45,8 @@ function(AddCoverage target)
   # "unused" is required for /usr/include (i.e. what else, if anything, should I
   # use in the assignment of SYSTEM_INCLUDE_PATH above?) and for Macos, but only
   # in the CI-pipeline (I need the exclude locally)
-  set(LCOV_ARGS --ignore-errors unsupported,unused --rc branch_coverage=1)
+  set(LCOV_ARGS --ignore-errors unsupported,unused --rc branch_coverage=1 --rc
+                derive_function_end_line=0)
   set(COV_NAME coverage)
 
   add_custom_target(
@@ -56,9 +57,9 @@ function(AddCoverage target)
     # Create baseline to make sure untouched files show up in the report
     COMMAND
       ${LCOV_PATH} ${LCOV_ARGS} -d . --filter brace --exclude
-      ${SYSTEM_INCLUDE_PATH} --erase-functions __cxx_global_var_init --rc
-      derive_function_end_line=0 --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
-      ${GCOV_PATH} -c -i -o ${COV_NAME}.base
+      ${SYSTEM_INCLUDE_PATH} --erase-functions __cxx_global_var_init --exclude
+      ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} -c -i -o
+      ${COV_NAME}.base
     # Run tests
     COMMAND $<TARGET_FILE:${target}>
     # Capturing lcov counters and generating report
@@ -73,12 +74,11 @@ function(AddCoverage target)
       ${COV_NAME}.capture
     # Add baseline counters
     COMMAND
-      ${LCOV_PATH} ${LCOV_ARGS} --gcov-tool ${GCOV_PATH} --rc
-      derive_function_end_line=0 -a ${COV_NAME}.base -a ${COV_NAME}.capture
-      --output-file ${COV_NAME}.total
+      ${LCOV_PATH} ${LCOV_ARGS} --gcov-tool ${GCOV_PATH} -a ${COV_NAME}.base -a
+      ${COV_NAME}.capture --output-file ${COV_NAME}.total
     # filter collected data to final coverage report
-    COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . --rc derive_function_end_line=0 -r
-            ${COV_NAME}.total -o ${COV_NAME}.info
+    COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . -r ${COV_NAME}.total -o
+            ${COV_NAME}.info
     # Generate HTML output
     COMMAND ${GENHTML_PATH} --rc derive_function_end_line=0 --ignore-errors
             category,category -o coverage ${COV_NAME}.info
