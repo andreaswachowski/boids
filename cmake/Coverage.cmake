@@ -67,6 +67,8 @@ function(AddCoverage target)
       --exclude
       ${CMAKE_SOURCE_DIR}/tests)
 
+  # Parts from
+  # https://github.com/bilke/cmake-modules/blob/master/CodeCoverage.cmake
   add_custom_target(
     coverage
     COMMENT "Running coverage for ${target}..."
