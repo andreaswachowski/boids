@@ -42,29 +42,46 @@ function(AddCoverage target)
     message(FATAL_ERROR "Unsupported platform for coverage collection")
   endif()
 
+  # "unused" is required for /usr/include (i.e. what else, if anything, should I
+  # use in the assignment of SYSTEM_INCLUDE_PATH above?) and for Macos, but only
+  # in the CI-pipeline (I need the exclude locally)
+  set(LCOV_ARGS --ignore-errors unsupported,unused --rc branch_coverage=1)
+  set(COV_NAME coverage)
+
   add_custom_target(
     coverage
     COMMENT "Running coverage for ${target}..."
-    COMMAND ${LCOV_PATH} -d . --zerocounters
+    # Cleanup lcov
+    COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . --zerocounters
+    # Create baseline to make sure untouched files show up in the report
+    COMMAND
+      ${LCOV_PATH} ${LCOV_ARGS} -d . --filter brace --exclude
+      ${SYSTEM_INCLUDE_PATH} --erase-functions __cxx_global_var_init --rc
+      derive_function_end_line=0 --exclude ${CMAKE_SOURCE_DIR}/tests --gcov-tool
+      ${GCOV_PATH} -c -i -o ${COV_NAME}.base
+    # Run tests
     COMMAND $<TARGET_FILE:${target}>
-    # "unused" is required for /usr/include (i.e. what else, if anything,
-    # should I use in the assignment of SYSTEM_INCLUDE_PATH above?)
-    # and for Macos, but only in the CI-pipeline (I need the exclude locally)
-    # "filter brace" to avoid closing braces to count on coverage. This happened
-    # with clang and not GNU, thus having incomparable results.
+    # Capturing lcov counters and generating report
+    # "filter brace" to avoid closing braces to count on coverage. This
+    # happened with clang and not GNU, thus having incomparable results.
     # https://github.com/linux-test-project/lcov/issues/129
     # https://github.com/linux-test-project/lcov/issues/160#issuecomment-1543738264
     COMMAND
-      ${LCOV_PATH} -d . --filter brace --ignore-errors unsupported,unused
-      --exclude ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
+      ${LCOV_PATH} ${LCOV_ARGS} -d . --filter brace --exclude
+      ${SYSTEM_INCLUDE_PATH} --exclude ${GTEST_INCLUDE_DIR} --exclude
       ${CMAKE_SOURCE_DIR}/tests --gcov-tool ${GCOV_PATH} --capture -o
-      coverage.info
-    # COMMAND find . -name '*.gcda' -o -name '*.gcno' -name '*.gcov'
-    # COMMAND ${GENHTML_PATH} --version
-    # COMMAND ${LCOV_PATH} --version
-    COMMAND ${LCOV_PATH} -d . -r coverage.info -o filtered.info
-    COMMAND ${GENHTML_PATH} --ignore-errors category,category -o coverage
-            filtered.info
-    COMMAND rm -rf coverage.info filtered.info
+      ${COV_NAME}.capture
+    # Add baseline counters
+    COMMAND
+      ${LCOV_PATH} ${LCOV_ARGS} --gcov-tool ${GCOV_PATH} --rc
+      derive_function_end_line=0 -a ${COV_NAME}.base -a ${COV_NAME}.capture
+      --output-file ${COV_NAME}.total
+    # filter collected data to final coverage report
+    COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . --rc derive_function_end_line=0 -r
+            ${COV_NAME}.total -o ${COV_NAME}.info
+    # Generate HTML output
+    COMMAND ${GENHTML_PATH} --rc derive_function_end_line=0 --ignore-errors
+            category,category -o coverage ${COV_NAME}.info
+    COMMAND rm -rf ${COV_NAME}.capture ${COV_NAME}.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
