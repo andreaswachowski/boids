@@ -95,8 +95,7 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . -r ${COV_NAME}.total
             -o ${COV_NAME}.info
     # Generate HTML output
-    COMMAND ${GENHTML_PATH} --rc derive_function_end_line=0 --ignore-errors
-            category,category -o coverage ${COV_NAME}.info
+    COMMAND ${GENHTML_PATH} ${LCOV_ARGS} -o coverage ${COV_NAME}.info
     COMMAND rm -rf ${COV_NAME}.capture ${COV_NAME}.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
