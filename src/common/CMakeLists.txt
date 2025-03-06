@@ -1,6 +1,6 @@
 add_library(common OBJECT boid.cpp)
 
-target_include_directories(common PUBLIC include)
+target_include_directories(common PUBLIC .)
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   target_compile_options(common PRIVATE --coverage)
