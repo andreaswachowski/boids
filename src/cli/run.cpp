@@ -1,6 +1,5 @@
 #include "run.h"
 
-#include <ncurses.h>
 #include <algorithm>
 #include <chrono>
 #include <climits>
@@ -16,6 +15,7 @@
 
 #include <CLI/CLI.hpp>
 #include "boid.h"
+#include "ncurses_output.h"
 #include "spdlog/cfg/env.h"
 #include "spdlog/common.h"
 #include "spdlog/logger.h"
@@ -77,15 +77,13 @@ int run(int argc, char* argv[]) {
     return 1;
   }
 
-  // -- ncurses setup -----------------------------------------------------
-  initscr();
-  noecho();
-  curs_set(FALSE);
-
-  // -- simulation setup --------------------------------------------------
   int max_x = 0;
   int max_y = 0;
-  getmaxyx(stdscr, max_y, max_x);
+
+  NcursesOutput output;
+  output.initialize(max_x, max_y);
+
+  // -- simulation setup --------------------------------------------------
 
   spdlog::info("Using random seed {}.", config.seed);
   logger->flush();  // ensure that the seed is logged.
@@ -99,18 +97,11 @@ int run(int argc, char* argv[]) {
   }
 
   while (true) {
-    clear();
-
-    for (const auto& boid : boids) {
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
-      mvprintw(static_cast<int>(boid.y), static_cast<int>(boid.x), "o");
-    }
-
-    refresh();
+    output.render(boids);
     update_boids(boids);
     std::this_thread::sleep_for(std::chrono::milliseconds(config.delay_ms));
   }
 
-  endwin();
+  output.cleanup();
   return 0;
 }
