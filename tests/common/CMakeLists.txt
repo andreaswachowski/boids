@@ -1,8 +1,5 @@
 add_executable(common_tests test_boid.cpp)
 
-include(Coverage)
-addcoverage(common_tests)
-
 include(GoogleTest)
 
 # Because common is an object library, there's no place to link gcov to it.

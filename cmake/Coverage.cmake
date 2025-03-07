@@ -47,7 +47,7 @@ function(AddCoverage target)
   # in the CI-pipeline (I need the exclude locally)
   set(LCOV_ARGS
       --ignore-errors
-      unsupported,unused
+      unsupported,unused,category
       --rc
       branch_coverage=1
       --rc
