@@ -26,19 +26,31 @@ RUN apt-get update && apt-get install -y \
     wget \
     libzstd-dev \
     software-properties-common \
-    libspdlog-dev libgtest-dev libcli11-dev lcov \
+    libspdlog-dev libgtest-dev libcli11-dev \
     && rm -rf /var/lib/apt/lists/* \
     && yes | /usr/bin/unminimize
+
+
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
 RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
 RUN apt-get update
 RUN apt-get install -y llvm-18 llvm-18-dev llvm-18-tools clang-18
-RUN apt-get install -y python3-setuptools
+RUN apt-get install -y python3-setuptools cpanminus
+
+WORKDIR /tmp
+
+
+RUN cpanm Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate
+RUN wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
+RUN tar -xzf lcov-2.3.tar.gz
+WORKDIR /tmp/lcov-2.3
+RUN make install
+RUN lcov --version
 
 RUN echo "set -o vi" >> /root/.bashrc
 
-WORKDIR boids
+WORKDIR /boids
 COPY CMakeLists.txt .
 COPY src src/
 COPY cmake cmake/

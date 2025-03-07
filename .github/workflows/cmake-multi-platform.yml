@@ -54,7 +54,14 @@ jobs:
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             sudo apt-get update
-            sudo apt-get install -y libspdlog-dev libgtest-dev libcli11-dev lcov
+            sudo apt-get install -y libspdlog-dev libgtest-dev libcli11-dev cpanminus
+            sudo cpanm Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate
+            cd /tmp
+            wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
+            tar -xzf lcov-2.3.tar.gz
+            cd /tmp/lcov-2.3
+            sudo make install
+            lcov --version
           elif [[ "${{ matrix.os }}" == "macos-15" ]]; then
             brew update
             brew install spdlog googletest cli11 lcov
