@@ -1,0 +1,78 @@
+name: Build and Push Ubuntu Image with latest lcov
+
+on:
+  workflow_call:
+    secrets:
+      UBUNTU_PACKAGE_TOKEN:
+        description: "A token to allow access to the container registry."
+        required: true
+
+jobs:
+  check-image:
+    runs-on: ubuntu-latest
+    outputs:
+      needs_build: ${{ steps.check.outputs.needs_build }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check if image exists in GHCR
+        shell: bash
+        id: check_image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/ubuntu-cpp:latest
+          GHCR_TOKEN=$(echo ${{ secrets.UBUNTU_PACKAGE_TOKEN }} | base64)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GHCR_TOKEN}" \
+            "https://ghcr.io/v2/${{ github.repository_owner }}/ubuntu-cpp/tags/list")
+
+          if [ "$STATUS" -eq 200 ]; then
+            echo "exists=true" >> $GITHUB_ENV
+          else # 404 if image does not exist
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+      - name: Check if Dockerfile was modified
+        id: check_dockerfile
+        shell: bash
+        run: |
+          if git diff --quiet HEAD^ HEAD -- Dockerfile.ci; then
+            echo "dockerfile_changed=false" >> $GITHUB_ENV
+          else
+            echo "dockerfile_changed=true" >> $GITHUB_ENV
+          fi
+      - name: Determine if build is needed
+        id: check
+        shell: bash
+        run: |
+          if [[ "$exists" == "false" || "$dockerfile_changed" == "true" ]]; then
+            echo "needs_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs_build=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-push:
+    needs: check-image
+    if: needs.check-image.outputs.needs_build == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.UBUNTU_PACKAGE_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and tag Docker image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/ubuntu-cpp
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest -f Dockerfile.ci .
+
+      - name: Push Docker image to GHCR
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/ubuntu-cpp
+          IMAGE_TAG=${{ github.sha }}
+          docker push $IMAGE_NAME:$IMAGE_TAG
+          docker push $IMAGE_NAME:latest

@@ -2,9 +2,18 @@
 name: Build Project
 description: Reusable steps for building the project
 inputs:
-  build_output_dir:
-    description: Output directory required for CMake
-    required: true
+  source_dir:
+    description: Source directory for CMake
+    required: false
+    # github.workspace does not work in containers:
+    # https://github.com/actions/runner/issues/2058
+    default: "${{ github.workspace }}"
+  build_dir:
+    description: Build directory for CMake
+    required: false
+    # github.workspace does not work in containers:
+    # https://github.com/actions/runner/issues/2058
+    default: "${{ github.workspace }}/build"
   os:
     description: The operating system (required to distinguish the coverage reports)
     required: true
@@ -25,19 +34,19 @@ runs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       shell: bash
       run: >
-        cmake -B ${{ inputs.build_output_dir }}
+        cmake -B ${{ inputs.build_dir }}
         -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
-        -S ${{ github.workspace }}
+        -S ${{ inputs.source_dir }}
 
     - name: Build
       shell: bash
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: |
-        cmake --build ${{ inputs.build_output_dir }} --config ${{ inputs.build_type }}
+        cmake --build ${{ inputs.build_dir }} --config ${{ inputs.build_type }}
         if [[ "${{ inputs.build_type }}" == "Debug" ]]; then
-          cmake --build ${{ inputs.build_output_dir }} --config ${{ inputs.build_type }} -t coverage
+          cmake --build ${{ inputs.build_dir }} --config ${{ inputs.build_type }} -t coverage
         fi
 
     - name: Verify llvm-cov location
@@ -48,12 +57,12 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: coverage-${{ inputs.os }}-${{ inputs.c_compiler }}
-        path: "${{ inputs.build_output_dir }}/coverage"
+        path: "${{ inputs.build_dir }}/coverage"
         retention-days: 7 # Keep artifacts for 7 days
         if-no-files-found: ignore
 
     - name: Test
-      working-directory: ${{ inputs.build_output_dir }}
+      working-directory: ${{ inputs.build_dir }}
       shell: bash
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail

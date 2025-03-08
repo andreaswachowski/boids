@@ -1,5 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+# Derived from https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
 
 on:
@@ -9,9 +8,19 @@ on:
     branches: ["main"]
 
 jobs:
+  ensure-container:
+    uses: ./.github/workflows/build-container.yml
+    secrets:
+      UBUNTU_PACKAGE_TOKEN: ${{ secrets.UBUNTU_PACKAGE_TOKEN }}
+
   build-ubuntu:
+    needs: ensure-container
     runs-on: ubuntu-latest
-    # container: ghcr.io/andreaswachowski/ubuntu-cpp:latest
+    container:
+      image: ghcr.io/andreaswachowski/ubuntu-cpp:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.UBUNTU_PACKAGE_TOKEN }}
 
     strategy:
       fail-fast: false
@@ -26,27 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libspdlog-dev libgtest-dev libcli11-dev cpanminus
-          sudo cpanm Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate
-          cd /tmp
-          wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
-          tar -xzf lcov-2.3.tar.gz
-          cd /tmp/lcov-2.3
-          sudo make install
-          lcov --version
-
-      - name: Add LLVM to PATH
-        run: |
-          echo "/usr/lib/llvm-18/bin" >> $GITHUB_PATH
-
       - name: Build project
         uses: ./.github/actions/build
         with:
           os: ubuntu
-          build_output_dir: ${{ github.workspace }}/build
+          source_dir: /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
+          build_dir: /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build
           c_compiler: ${{ matrix.c_compiler }}
           cpp_compiler: ${{ matrix.cpp_compiler }}
           build_type: ${{ matrix.build_type }}
@@ -78,7 +72,6 @@ jobs:
         uses: ./.github/actions/build
         with:
           os: macos
-          build_output_dir: ${{ github.workspace }}/build
           c_compiler: ${{ matrix.c_compiler }}
           cpp_compiler: ${{ matrix.cpp_compiler }}
           build_type: ${{ matrix.build_type }}

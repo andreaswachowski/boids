@@ -1,8 +1,13 @@
 FROM ubuntu:24.04
 # vi: tw=0
 
-# Use this to test out Ubuntu-specific issues when developing on MacOS.
-# (Dockerfile.ci is a smaller version for the CI pipeline.)
+# The standard Ubuntu 24.04 Github runner comes with lcov 2.0, which
+# behaves differently to lcov 2.3 on MacOS. Installing lcov takes several
+# minutes, so this Docker image is used to build it once and reuse it
+# in the Github workflow.
+
+# The larger Dockerfile (also including vim and man pages) is for local
+# development on Macos.
 
 # From
 # https://github.com/banach-space/llvm-tutor/blob/main/Dockerfile_ubuntu_apt:
@@ -12,49 +17,39 @@ FROM ubuntu:24.04
 # setting the time-zone here.
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN apt-get update && apt-get install -y \
-    sudo \
-    git \
-    cmake \
-    man-db \
-    ninja-build \
-    build-essential \
-    python3-minimal python3-pip \
-    vim \
-    wget \
-    libzstd-dev \
+    # software-properties-common for apt-add-repository
     software-properties-common \
+    sudo \
+    # git for git-based cmake dependencies (e.g. spdlog, cli11)
+    git \
+    wget \
+    cmake \
+    build-essential \
     libspdlog-dev libgtest-dev libcli11-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && yes | /usr/bin/unminimize
-
-
+    cpanminus
+#    libzstd-dev \
+#    python3-minimal python3-pip \
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
 RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
-RUN apt-get update
-RUN apt-get install -y llvm-18 llvm-18-dev llvm-18-tools clang-18
-RUN apt-get install -y python3-setuptools cpanminus
 
-WORKDIR /tmp
-
+RUN apt-get install -y \
+    llvm-18 llvm-18-tools clang-18 \
+    && rm -rf /var/lib/apt/lists/*
+    #llvm-18 llvm-18-dev llvm-18-tools clang-18 clang-format-18 clang-tidy-18 \
 
 RUN cpanm Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate
-RUN wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
-RUN tar -xzf lcov-2.3.tar.gz
-WORKDIR /tmp/lcov-2.3
-RUN make install
-RUN lcov --version
 
-RUN echo "set -o vi" >> /root/.bashrc
+WORKDIR /tmp
+RUN wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
+RUN tar -xzf lcov-2.3.tar.gz && \
+  cd /tmp/lcov-2.3 && \
+  make install && \
+  rm -rf /tmp/lcov-2.3 /tmp/lcov-2.3.tar.gz && \
+  echo "set -o vi" >> /root/.bashrc
 
 WORKDIR /boids
-COPY CMakeLists.txt .
-COPY src src/
-COPY cmake cmake/
-COPY tests tests/
 ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
 RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> ~/.bashrc
-RUN mkdir Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
-RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build .
-# RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build . -t coverage
