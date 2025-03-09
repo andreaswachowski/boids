@@ -52,6 +52,5 @@ RUN tar -xzf lcov-2.3.tar.gz && \
   rm -rf /tmp/lcov-2.3 /tmp/lcov-2.3.tar.gz && \
   echo "set -o vi" >> /root/.bashrc
 
-WORKDIR /boids
+RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> /root/.bashrc
 ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
-RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> ~/.bashrc
