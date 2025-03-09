@@ -18,7 +18,7 @@ FROM ubuntu:24.04
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     # software-properties-common for apt-add-repository
     software-properties-common \
     sudo \
@@ -35,8 +35,10 @@ RUN apt-get update && apt-get install -y \
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
 RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
 
-RUN apt-get install -y \
+RUN apt-get install -y --no-install-recommends \
     llvm-18 llvm-18-tools clang-18 \
+    libncurses-dev libncurses6 \
+    libclang-rt-18-dev \
     && rm -rf /var/lib/apt/lists/*
     #llvm-18 llvm-18-dev llvm-18-tools clang-18 clang-format-18 clang-tidy-18 \
 
