@@ -17,9 +17,6 @@ inputs:
   os:
     description: The operating system (required to distinguish the coverage reports)
     required: true
-  c_compiler:
-    description: The C compiler
-    required: true
   cpp_compiler:
     description: The C++ compiler
     required: true
@@ -36,7 +33,6 @@ runs:
       run: >
         cmake -B ${{ inputs.build_dir }}
         -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
         -S ${{ inputs.source_dir }}
 
@@ -56,7 +52,7 @@ runs:
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-${{ inputs.os }}-${{ inputs.c_compiler }}
+        name: coverage-${{ inputs.os }}-${{ inputs.cpp_compiler }}
         path: "${{ inputs.build_dir }}/coverage"
         retention-days: 7 # Keep artifacts for 7 days
         if-no-files-found: ignore

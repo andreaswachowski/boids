@@ -26,12 +26,10 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        c_compiler: [gcc, clang]
+        cpp_compiler: [g++, clang++]
         include:
-          - c_compiler: gcc
-            cpp_compiler: g++
-          - c_compiler: clang
-            cpp_compiler: clang++
+          - cpp_compiler: g++
+          - cpp_compiler: clang++
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +39,6 @@ jobs:
           os: ubuntu
           source_dir: /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
           build_dir: /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build
-          c_compiler: ${{ matrix.c_compiler }}
           cpp_compiler: ${{ matrix.cpp_compiler }}
           build_type: ${{ matrix.build_type }}
 
@@ -51,10 +48,9 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        c_compiler: [clang]
+        cpp_compiler: [clang++]
         include:
-          - c_compiler: clang
-            cpp_compiler: clang++
+          - cpp_compiler: clang++
 
     steps:
       - uses: actions/checkout@v4
@@ -72,6 +68,5 @@ jobs:
         uses: ./.github/actions/build
         with:
           os: macos
-          c_compiler: ${{ matrix.c_compiler }}
           cpp_compiler: ${{ matrix.cpp_compiler }}
           build_type: ${{ matrix.build_type }}
