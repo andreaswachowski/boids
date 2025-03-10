@@ -49,10 +49,7 @@ RUN lcov --version
 RUN echo "set -o vi" >> /root/.bashrc
 
 WORKDIR /boids
-COPY CMakeLists.txt .
-COPY src src/
-COPY cmake cmake/
-COPY tests tests/
+COPY . .
 ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
 RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> ~/.bashrc
 RUN mkdir Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
