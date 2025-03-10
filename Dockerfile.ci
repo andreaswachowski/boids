@@ -28,25 +28,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     build-essential \
     libspdlog-dev libgtest-dev libcli11-dev \
-    cpanminus \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg && \
+    cpanminus && \
+    wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg && \
     apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && \
-    apt-get purge -y --auto-remove software-properties-common && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && apt-get install -y --no-install-recommends \
     llvm-18 llvm-18-tools clang-18 \
     libncurses-dev libncurses6 \
-    libclang-rt-18-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN cpanm --notest Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate && \
-    rm -rf ~/.cpanm
-
-WORKDIR /tmp
-RUN wget -qO lcov.tar.gz https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz && \
+    libclang-rt-18-dev && \
+    apt-get purge -y --auto-remove software-properties-common && \
+    rm -rf /var/lib/apt/lists/* && \
+    cpanm --notest Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate && \
+    rm -rf ~/.cpanm && \
+    cd /tmp && \
+    wget -qO lcov.tar.gz https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz && \
     tar -xzf lcov.tar.gz && \
     cd /tmp/lcov-2.3 && \
     make install && \
