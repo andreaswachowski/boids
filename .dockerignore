@@ -1,0 +1,16 @@
+.cache
+.dockerignore
+.git
+.github
+.gitignore
+.ignore
+.mise.local.toml
+Debug
+Dockerfile
+Dockerfile.ci
+Release
+Session.vim
+commit.msg
+compile_commands.json
+logs
+venv
