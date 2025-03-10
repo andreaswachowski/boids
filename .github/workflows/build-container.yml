@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # for git-diff in "Check if Dockerfile was modified"
 
       - name: Check if image exists in GHCR
         shell: bash
