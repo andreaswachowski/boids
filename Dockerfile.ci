@@ -28,29 +28,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     build-essential \
     libspdlog-dev libgtest-dev libcli11-dev \
-    cpanminus
-#    libzstd-dev \
-#    python3-minimal python3-pip \
+    cpanminus \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
-RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
+RUN wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg && \
+    apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && \
+    apt-get purge -y --auto-remove software-properties-common && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     llvm-18 llvm-18-tools clang-18 \
     libncurses-dev libncurses6 \
     libclang-rt-18-dev \
     && rm -rf /var/lib/apt/lists/*
-    #llvm-18 llvm-18-dev llvm-18-tools clang-18 clang-format-18 clang-tidy-18 \
 
-RUN cpanm Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate
+RUN cpanm --notest Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate && \
+    rm -rf ~/.cpanm
 
 WORKDIR /tmp
-RUN wget https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz
-RUN tar -xzf lcov-2.3.tar.gz && \
-  cd /tmp/lcov-2.3 && \
-  make install && \
-  rm -rf /tmp/lcov-2.3 /tmp/lcov-2.3.tar.gz && \
-  echo "set -o vi" >> /root/.bashrc
+RUN wget -qO lcov.tar.gz https://github.com/linux-test-project/lcov/releases/download/v2.3/lcov-2.3.tar.gz && \
+    tar -xzf lcov.tar.gz && \
+    cd /tmp/lcov-2.3 && \
+    make install && \
+    rm -rf /tmp/lcov-2.3 lcov.tar.gz
 
-RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> /root/.bashrc
+RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> /root/.bashrc && \
+    echo "set -o vi" >> /root/.bashrc
 ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
