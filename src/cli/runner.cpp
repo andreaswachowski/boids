@@ -1,4 +1,4 @@
-#include "run.h"
+#include "runner.h"
 
 #include <algorithm>
 #include <chrono>
@@ -25,20 +25,16 @@
 constexpr unsigned int DEFAULT_NUM_BOIDS = 20;
 constexpr unsigned int DEFAULT_DELAY_MS = 100;
 
-struct SimulationConfig {
-  unsigned int seed = INT_MAX;
-  unsigned int num_boids = DEFAULT_NUM_BOIDS;
-  std::string logfile = "boids.log";
-  unsigned int delay_ms = DEFAULT_DELAY_MS;
-};
-
-namespace {
-void update_boids(std::vector<Boid>& boids) {
+void Runner::update_boids(std::vector<Boid>& boids) {
   std::for_each(std::execution::par, boids.begin(), boids.end(), [](Boid& boid) { boid.update(); });
 }
 
-SimulationConfig configure_cli_args(CLI::App& app) {
-  SimulationConfig config;
+SimulationConfig Runner::configure_cli_args(CLI::App& app) {
+  SimulationConfig config{.seed = INT_MAX,
+                          .num_boids = DEFAULT_NUM_BOIDS,
+                          .logfile = "boids.log",
+                          .delay_ms = DEFAULT_DELAY_MS};
+
   app.add_option("-s,--seed", config.seed, "Random seed (default random)");
   app.add_option("-b,--boids", config.num_boids, "Number of boids (default 20)");
   app.add_option("-d,--delay", config.delay_ms, "Delay between iterations (in ms, default 100)");
@@ -53,10 +49,9 @@ SimulationConfig configure_cli_args(CLI::App& app) {
 
   return config;
 }
-}  // namespace
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-int run(int argc, char* argv[]) {
+int Runner::run(int argc, char* argv[]) {
   CLI::App app{"Boids"};
 
   auto config = configure_cli_args(app);

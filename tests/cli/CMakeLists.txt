@@ -1,4 +1,4 @@
-add_executable(cli_tests test_run.cpp)
+add_executable(cli_tests test_runner.cpp)
 
 include(GoogleTest)
 
