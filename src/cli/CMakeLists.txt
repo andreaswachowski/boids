@@ -1,6 +1,6 @@
 include(cmake/Dependencies.cmake)
 
-add_library(cli OBJECT run.cpp ncurses_output.cpp)
+add_library(cli OBJECT runner.cpp ncurses_output.cpp)
 
 target_include_directories(cli PRIVATE ${CURSES_INCLUDE_PATH})
 target_include_directories(cli PUBLIC .)
