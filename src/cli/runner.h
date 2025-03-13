@@ -11,6 +11,7 @@ class Boid;
 
 struct SimulationConfig {
   unsigned int seed;
+  unsigned int num_iterations;
   unsigned int num_boids;
   std::string logfile;
   unsigned int delay_ms;
