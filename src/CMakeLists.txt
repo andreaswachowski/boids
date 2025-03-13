@@ -1,4 +1,4 @@
-add_executable(boid-cli cli/main.cpp)
+add_executable(boid-cli main.cpp)
 
 add_subdirectory(common)
 add_subdirectory(cli)
