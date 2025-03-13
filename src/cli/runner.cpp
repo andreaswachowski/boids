@@ -31,11 +31,13 @@ void Runner::update_boids(std::vector<Boid>& boids) {
 
 SimulationConfig Runner::configure_cli_args(CLI::App& app) {
   SimulationConfig config{.seed = INT_MAX,
+                          .num_iterations = 0,
                           .num_boids = DEFAULT_NUM_BOIDS,
                           .logfile = "boids.log",
                           .delay_ms = DEFAULT_DELAY_MS};
 
   app.add_option("-s,--seed", config.seed, "Random seed (default random)");
+  app.add_option("-i,--iterations", config.num_iterations, "Number of iterations (default ∞)");
   app.add_option("-b,--boids", config.num_boids, "Number of boids (default 20)");
   app.add_option("-d,--delay", config.delay_ms, "Delay between iterations (in ms, default 100)");
   app.add_option("-o,--logfile", config.logfile,
@@ -91,10 +93,13 @@ int Runner::run(int argc, char* argv[]) {
     boids.emplace_back(gen, max_x, max_y);
   }
 
-  while (true) {
+  unsigned int i = 0;
+
+  while (config.num_iterations == 0 || i < config.num_iterations) {
     output.render(boids);
     update_boids(boids);
     std::this_thread::sleep_for(std::chrono::milliseconds(config.delay_ms));
+    ++i;
   }
 
   output.cleanup();
