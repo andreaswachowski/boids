@@ -9,7 +9,8 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   target_link_options(cli_tests PRIVATE --coverage)
 endif()
 
-target_link_libraries(cli_tests PRIVATE GTest::gtest_main cli common)
+target_link_libraries(cli_tests PRIVATE GTest::gtest_main cli common
+                                        Microsoft.GSL::GSL)
 target_include_directories(cli_tests PRIVATE ${PROJECT_SOURCE_DIR}/src/cli)
 
 gtest_discover_tests(cli_tests)
