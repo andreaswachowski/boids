@@ -3,7 +3,7 @@ add_executable(boid-cli main.cpp)
 add_subdirectory(common)
 add_subdirectory(cli)
 
-target_link_libraries(boid-cli PRIVATE common cli)
+target_link_libraries(boid-cli PRIVATE common cli Microsoft.GSL::GSL)
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   target_compile_options(boid-cli PRIVATE --coverage)
