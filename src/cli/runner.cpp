@@ -15,7 +15,7 @@
 
 #include <CLI/CLI.hpp>
 #include "boid.h"
-#include "ncurses_output.h"
+#include "output_handler.h"
 #include "spdlog/cfg/env.h"
 #include "spdlog/common.h"
 #include "spdlog/logger.h"
@@ -24,6 +24,9 @@
 
 constexpr unsigned int DEFAULT_NUM_BOIDS = 20;
 constexpr unsigned int DEFAULT_DELAY_MS = 100;
+
+Runner::Runner(OutputHandler& output_handler)
+    : output_(output_handler) {}
 
 void Runner::update_boids(std::vector<Boid>& boids) {
   std::for_each(std::execution::par, boids.begin(), boids.end(), [](Boid& boid) { boid.update(); });
@@ -77,8 +80,7 @@ int Runner::run(int argc, char* argv[]) {
   int max_x = 0;
   int max_y = 0;
 
-  NcursesOutput output;
-  output.initialize(max_x, max_y);
+  output_.initialize(max_x, max_y);
 
   // -- simulation setup --------------------------------------------------
 
@@ -96,12 +98,12 @@ int Runner::run(int argc, char* argv[]) {
   unsigned int i = 0;
 
   while (config.num_iterations == 0 || i < config.num_iterations) {
-    output.render(boids);
+    output_.render(boids);
     update_boids(boids);
     std::this_thread::sleep_for(std::chrono::milliseconds(config.delay_ms));
     ++i;
   }
 
-  output.cleanup();
+  output_.cleanup();
   return 0;
 }
