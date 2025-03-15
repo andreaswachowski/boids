@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     libzstd-dev \
     software-properties-common \
-    libspdlog-dev libgtest-dev libcli11-dev \
+    libspdlog-dev libgtest-dev libgmock-dev libcli11-dev \
     && rm -rf /var/lib/apt/lists/* \
     && yes | /usr/bin/unminimize
 

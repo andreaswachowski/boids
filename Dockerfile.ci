@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     cmake \
     build-essential \
-    libspdlog-dev libgtest-dev libcli11-dev \
+    libspdlog-dev libgtest-dev libgmock-dev libcli11-dev \
     cpanminus && \
     wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg && \
     apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && \

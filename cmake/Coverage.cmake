@@ -46,8 +46,9 @@ function(AddCoverage target)
   # use in the assignment of SYSTEM_INCLUDE_PATH above?) and for Macos, but only
   # in the CI-pipeline (I need the exclude locally)
   set(LCOV_ARGS
+      --parallel
       --ignore-errors
-      unsupported,unused,category
+      unsupported,unused,category,inconsistent
       --rc
       branch_coverage=1
       --rc
@@ -76,8 +77,9 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} ${LCOV_ARGS} -d . --zerocounters
     # Create baseline to make sure untouched files show up in the report
     COMMAND
-      ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . --erase-functions
-      __cxx_global_var_init --gcov-tool ${GCOV_PATH} -c -i -o ${COV_NAME}.base
+      ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} --erase-functions
+      __cxx_global_var_init -d . --gcov-tool ${GCOV_PATH} -c -i -o
+      ${COV_NAME}.base
     # Run tests
     COMMAND $<TARGET_FILE:${target}>
     # Capturing lcov counters and generating report
@@ -85,8 +87,10 @@ function(AddCoverage target)
     # happened with clang and not GNU, thus having incomparable results.
     # https://github.com/linux-test-project/lcov/issues/129
     # https://github.com/linux-test-project/lcov/issues/160#issuecomment-1543738264
-    COMMAND ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . --gcov-tool
-            ${GCOV_PATH} --capture -o ${COV_NAME}.capture
+    COMMAND
+      ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} --erase-functions
+      __cxx_global_var_init -d . --gcov-tool ${GCOV_PATH} --capture -o
+      ${COV_NAME}.capture
     # Add baseline counters
     COMMAND
       ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} --gcov-tool ${GCOV_PATH} -a
@@ -95,7 +99,8 @@ function(AddCoverage target)
     COMMAND ${LCOV_PATH} ${LCOV_ARGS} ${LCOV_EXCLUDES} -d . -r ${COV_NAME}.total
             -o ${COV_NAME}.info
     # Generate HTML output
-    COMMAND ${GENHTML_PATH} ${LCOV_ARGS} -o coverage ${COV_NAME}.info
+    COMMAND ${GENHTML_PATH} ${LCOV_ARGS} --erase-functions __cxx_global_var_init
+            -o coverage ${COV_NAME}.info
     COMMAND rm -rf ${COV_NAME}.capture ${COV_NAME}.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
