@@ -55,7 +55,7 @@ class RunnerTest : public testing::Test {
 };
 
 TEST_F(RunnerTest, CanConfigureNumberOfBoids) {
-  ArgvHolder argv_holder({"boids", "-s", "0", "-i", "2"});
+  ArgvHolder argv_holder({"boids", "-s", "0", "-d", "0", "-i", "2"});
 
   EXPECT_CALL(mock_output_, render(_)).Times(2);
 
