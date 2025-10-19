@@ -60,10 +60,6 @@ jobs:
           brew update
           brew install spdlog googletest cli11 lcov
 
-      - name: Add LLVM to PATH
-        run: |
-          echo "$(brew --prefix llvm@18)/bin" >> $GITHUB_PATH
-
       - name: Build and test project, measure test coverage
         uses: ./.github/actions/build
         with:
