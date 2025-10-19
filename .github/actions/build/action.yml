@@ -36,6 +36,15 @@ runs:
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
         -S ${{ inputs.source_dir }}
 
+    - name: Ensure llvm-cov is found in path
+      shell: bash
+      run: |
+        echo "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin" >> $GITHUB_PATH
+
+    - name: Verify llvm-cov location
+      shell: bash
+      run: which llvm-cov && llvm-cov --version
+
     - name: Build
       shell: bash
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
@@ -44,10 +53,6 @@ runs:
         if [[ "${{ inputs.build_type }}" == "Debug" ]]; then
           cmake --build ${{ inputs.build_dir }} --config ${{ inputs.build_type }} -t coverage
         fi
-
-    - name: Verify llvm-cov location
-      run: which llvm-cov && llvm-cov --version
-      shell: bash
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
