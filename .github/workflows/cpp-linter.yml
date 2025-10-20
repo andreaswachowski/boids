@@ -1,10 +1,10 @@
 name: cpp-linter
 on:
   pull_request:
-    branches: ["main"]
+    branches: [$default-branch]
     paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
   push:
-    branches: ["main"]
+    branches: [$default-branch]
     paths: ["**.c", "**.cpp", "**.h", "**CMakeLists.txt", "**.cmake"]
 jobs:
   cpp-linter:

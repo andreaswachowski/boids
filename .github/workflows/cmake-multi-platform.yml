@@ -3,9 +3,9 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: ["main"]
+    branches: [$default-branch]
   pull_request:
-    branches: ["main"]
+    branches: [$default-branch]
 
 jobs:
   ensure-container:
