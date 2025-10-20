@@ -18,6 +18,8 @@ FROM ubuntu:24.04
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+ARG LLVM_VERSION=19
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # software-properties-common for apt-add-repository
     software-properties-common \
@@ -30,11 +32,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libspdlog-dev libgtest-dev libgmock-dev libcli11-dev \
     cpanminus && \
     wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /etc/apt/trusted.gpg.d/llvm-snapshot.gpg && \
-    apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && \
+    apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-${LLVM_VERSION} main" && \
     apt-get update && apt-get install -y --no-install-recommends \
-    llvm-18 llvm-18-tools clang-18 \
+    llvm-${LLVM_VERSION} llvm-${LLVM_VERSION}-tools clang-${LLVM_VERSION} \
     libncurses-dev libncurses6 \
-    libclang-rt-18-dev && \
+    libclang-rt-${LLVM_VERSION}-dev && \
     apt-get purge -y --auto-remove software-properties-common && \
     rm -rf /var/lib/apt/lists/* && \
     cpanm --notest Capture::Tiny DateTime Devel::Cover Digest::MD5 File::Spec JSON::XS Memory::Process Module::Load::Conditional Scalar::Util Time::HiRes TimeDate && \
@@ -46,6 +48,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     make install && \
     rm -rf /tmp/lcov-2.3 lcov.tar.gz
 
-RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> /root/.bashrc && \
+RUN echo "export PATH=$PATH:/usr/lib/llvm-${LLVM_VERSION}/bin" >> /root/.bashrc && \
     echo "set -o vi" >> /root/.bashrc
-ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
+ENV PATH="${PATH}:/usr/lib/llvm-${LLVM_VERSION}/bin"

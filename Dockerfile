@@ -12,6 +12,9 @@ FROM ubuntu:24.04
 # setting the time-zone here.
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ARG LLVM_VERSION=19
+
 RUN apt-get update && apt-get install -y \
     sudo \
     git \
@@ -31,9 +34,9 @@ RUN apt-get update && apt-get install -y \
 
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/llvm-snapshot.gpg
-RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
+RUN apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-${LLVM_VERSION} main"
 RUN apt-get update
-RUN apt-get install -y llvm-18 llvm-18-dev llvm-18-tools clang-18
+RUN apt-get install -y llvm-${LLVM_VERSION} llvm-${LLVM_VERSION}-dev llvm-${LLVM_VERSION}-tools clang-${LLVM_VERSION}
 RUN apt-get install -y python3-setuptools cpanminus
 
 WORKDIR /tmp
@@ -50,8 +53,8 @@ RUN echo "set -o vi" >> /root/.bashrc
 
 WORKDIR /boids
 COPY . .
-ENV PATH="${PATH}:/usr/lib/llvm-18/bin"
-RUN echo "export PATH=$PATH:/usr/lib/llvm-18/bin" >> ~/.bashrc
+ENV PATH="${PATH}:/usr/lib/llvm-${LLVM_VERSION}/bin"
+RUN echo "export PATH=$PATH:/usr/lib/llvm-${LLVM_VERSION}/bin" >> ~/.bashrc
 RUN mkdir Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
 RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build .
 # RUN cd Debug && CMAKE_BUILD_TYPE=Debug cmake --build . -t coverage
