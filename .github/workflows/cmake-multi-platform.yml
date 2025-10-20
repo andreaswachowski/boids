@@ -3,9 +3,9 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [$default-branch]
+    branches: [$default-branch, "renovate/*"]
   pull_request:
-    branches: [$default-branch]
+    branches: [$default-branch, "renovate/*"]
 
 jobs:
   ensure-container:
