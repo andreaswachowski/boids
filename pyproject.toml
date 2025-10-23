@@ -1,0 +1,25 @@
+[project]
+name = "boids"
+version = "0.1.0"
+description = "Boids"
+
+license = { text = "MIT" }
+readme = "README.md"
+
+authors = [
+    { name = "Andreas Wachowski" },
+]
+
+requires-python = ">=3.13"
+
+[project.urls]
+repository = "https://github.com/andreaswachowski/boids/issues"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+cmakelang = "^0.6.13"
+clang-format = "^19.1.7"
+clang-tidy = "^19.1.0"
+pyyaml = "^6.0.3"

@@ -40,9 +40,7 @@ To test, execute `./Debug/tests/tests` or call `ctest` inside the `Debug` direct
 ## Linters (clang-format, clang-tidy, cmake-format)
 
 ```
-python3 -m venv venv
-source venv/bin/activate
-python3 -m pip install cmakelang clang-format clang-tidy
+poetry install
 ```
 
 ## Git Hooks
