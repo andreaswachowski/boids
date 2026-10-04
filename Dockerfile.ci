@@ -1,4 +1,4 @@
-FROM ubuntu:24.04@sha256:66460d557b25769b102175144d538d88219c077c678a49af4afca6fbfc1b5252
+FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
 # vi: tw=0
 
 # The standard Ubuntu 24.04 Github runner comes with lcov 2.0, which
