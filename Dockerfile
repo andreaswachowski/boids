@@ -1,4 +1,4 @@
-FROM ubuntu:24.04@sha256:66460d557b25769b102175144d538d88219c077c678a49af4afca6fbfc1b5252
+FROM ubuntu:24.04@sha256:fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852
 # vi: tw=0
 
 # Use this to test out Ubuntu-specific issues when developing on MacOS.
